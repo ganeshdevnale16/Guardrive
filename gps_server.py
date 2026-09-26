@@ -122,3 +122,31 @@ def latest_gps(driver_id: int):
         "success": True,
         "location": dict(location),
     }
+
+
+
+
+
+
+
+@app.get("/gps/latest/{driver_id}")
+def latest_gps(driver_id: int):
+
+    latest = database.get_latest_location(driver_id)
+
+    if not latest:
+        return {
+            "success": True,
+            "location": None
+        }
+
+    return {
+        "success": True,
+        "location": {
+            "latitude": latest["latitude"],
+            "longitude": latest["longitude"],
+            "speed": latest["speed"],
+            "battery": latest["battery"],
+            "recorded_at": latest["recorded_at"]
+        }
+    }
