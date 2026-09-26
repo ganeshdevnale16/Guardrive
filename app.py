@@ -1485,9 +1485,6 @@
 
 
 
-
-
-
 import streamlit as st
 
 
@@ -1514,8 +1511,7 @@ if "authenticated" not in st.session_state:
 
 
 # ============================================================
-# PAGE DEFINITIONS
-# Root-level files
+# ROOT-LEVEL PAGES
 # ============================================================
 
 driver_page = st.Page(
@@ -1588,7 +1584,7 @@ st.html(
         justify-content: center;
 
         background: #111827;
-        color: white;
+        color: #ffffff;
 
         font-size: 28px;
         font-weight: 800;
@@ -1610,6 +1606,7 @@ st.html(
         width: 100%;
         max-width: 430px;
         box-sizing: border-box;
+
         padding: 30px;
 
         border: 1px solid #e5e7eb;
@@ -1677,7 +1674,7 @@ st.html(
         justify-content: center;
 
         background: #111827;
-        color: white;
+        color: #ffffff;
 
         font-size: 19px;
         font-weight: 800;
@@ -1736,7 +1733,7 @@ st.html(
     }
 
     .hero-title {
-        color: white;
+        color: #ffffff;
         font-size: 46px;
         line-height: 1.05;
         font-weight: 800;
@@ -1821,7 +1818,7 @@ st.html(
 
         padding: 25px;
 
-        background: white;
+        background: #ffffff;
 
         margin-bottom: 12px;
     }
@@ -1987,6 +1984,7 @@ if not st.session_state.authenticated:
         "Sign in to Guardrive",
         type="primary",
         use_container_width=True,
+        key="login_button",
     ):
 
         if password == APP_PASSWORD:
@@ -2061,7 +2059,8 @@ with nav_right:
 
     if st.button(
         "Sign out",
-        use_container_width=True
+        use_container_width=True,
+        key="home_signout",
     ):
 
         st.session_state.clear()
@@ -2256,10 +2255,3 @@ st.html(
     </div>
     """
 )
-
-
-# ============================================================
-# RUN NAVIGATION
-# ============================================================
-
-pg.run()
