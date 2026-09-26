@@ -1351,7 +1351,7 @@ with driver_col:
     ):
 
         st.switch_page(
-            "pages/1_Driver.py"
+            "Driver.py"
         )
 
 
@@ -1393,7 +1393,7 @@ with family_col:
     ):
 
         st.switch_page(
-            "pages/2_Family_Chat.py"
+            "Family_Chat.py"
         )
 
 
