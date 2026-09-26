@@ -1344,15 +1344,13 @@ with driver_col:
 
 
     if st.button(
-        "Open Driver Portal",
-        use_container_width=True,
-        type="primary",
-        key="open_driver",
-    ):
+    "Open Driver Portal",
+    use_container_width=True,
+    type="primary",
+    key="open_driver",
+):
 
-        st.switch_page(
-            "Driver.py"
-        )
+    st.switch_page("Driver")
 
 
 # ============================================================
@@ -1387,14 +1385,12 @@ with family_col:
 
 
     if st.button(
-        "Open Family Access",
-        use_container_width=True,
-        key="open_family",
-    ):
+    "Open Family Access",
+    use_container_width=True,
+    key="open_family",
+):
 
-        st.switch_page(
-            "Family_Chat.py"
-        )
+    st.switch_page("Family_Chat")
 
 
 # ============================================================
