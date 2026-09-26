@@ -524,6 +524,27 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+# ============================================================
+# ROOT-LEVEL PAGES
+# ============================================================
+
+driver_page = st.Page(
+    "Driver.py",
+    title="Driver Portal",
+    icon="🚗",
+)
+
+family_page = st.Page(
+    "Family_Chat.py",
+    title="Family Access",
+    icon="👥",
+)
+
+pg = st.navigation(
+    [driver_page, family_page],
+    position="hidden",
+)
+
 
 
 # ============================================================
@@ -1341,16 +1362,16 @@ with driver_col:
         </div>
         """
     )
-
-
     if st.button(
                 "Open Driver Portal",
                 use_container_width=True,
                 type="primary",
                 key="open_driver",
             ):
-            
-                st.switch_page("Driver")
+                pg.switch_to(driver_page)
+
+
+
 
 
 # ============================================================
@@ -1382,15 +1403,21 @@ with family_col:
         </div>
         """
     )
-
-
     if st.button(
                 "Open Family Access",
                 use_container_width=True,
                 key="open_family",
             ):
+                pg.switch_to(family_page)
+
+
+    # if st.button(
+    #             "Open Family Access",
+    #             use_container_width=True,
+    #             key="open_family",
+    #         ):
             
-                st.switch_page("Family_Chat")
+    #             st.switch_page("Family_Chat")
 
 
 # ============================================================
