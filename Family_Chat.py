@@ -1568,7 +1568,7 @@ if "family_driver_id" not in st.session_state:
 # can see the newest GPS record when access is active.
 
 st_autorefresh(
-    interval=2000,
+    interval=20000,
     key="family_location_refresh",
 )
 
