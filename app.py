@@ -1512,6 +1512,15 @@ if "authenticated" not in st.session_state:
 # PAGE DEFINITIONS
 # ============================================================
 
+import streamlit as st
+
+home_page = st.Page(
+    "Home.py",
+    title="Guardrive",
+    icon="🛡️",
+    default=True,
+)
+
 driver_page = st.Page(
     "Driver.py",
     title="Driver Portal",
@@ -1523,6 +1532,17 @@ family_page = st.Page(
     title="Family Access",
     icon="👥",
 )
+
+pg = st.navigation(
+    [
+        home_page,
+        driver_page,
+        family_page,
+    ],
+    position="hidden",
+)
+
+pg.run()
 
 
 # ============================================================
