@@ -3938,8 +3938,12 @@ if "tracking" not in st.session_state:
 # ============================================================
 
 if not st.session_state.get("authenticated", False):
-    st.switch_page("app.py")
+    st.warning("Please login from the Guardrive home page.")
 
+    if st.button("← Back to Guardrive"):
+        st.stop()
+
+    st.stop()
 
 # ============================================================
 # GPS SERVER
