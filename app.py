@@ -1483,8 +1483,6 @@
 
 
 
-
-
 import streamlit as st
 
 
@@ -1511,7 +1509,7 @@ if "authenticated" not in st.session_state:
 
 
 # ============================================================
-# ROOT-LEVEL PAGES
+# PAGE DEFINITIONS
 # ============================================================
 
 driver_page = st.Page(
@@ -1555,10 +1553,6 @@ st.html(
         max-width: 1180px;
         padding: 28px 24px 40px 24px;
     }
-
-    /* ======================================================
-       LOGIN
-       ====================================================== */
 
     .login-wrapper {
         min-height: 78vh;
@@ -1606,7 +1600,6 @@ st.html(
         width: 100%;
         max-width: 430px;
         box-sizing: border-box;
-
         padding: 30px;
 
         border: 1px solid #e5e7eb;
@@ -1615,12 +1608,7 @@ st.html(
         background: #ffffff;
 
         box-shadow:
-            0 12px 35px rgba(
-                15,
-                23,
-                42,
-                .08
-            );
+            0 12px 35px rgba(15, 23, 42, .08);
     }
 
     .login-heading {
@@ -1643,10 +1631,6 @@ st.html(
         font-size: 12px;
         margin-top: 18px;
     }
-
-    /* ======================================================
-       NAVBAR
-       ====================================================== */
 
     .navbar {
         display: flex;
@@ -1699,10 +1683,6 @@ st.html(
         font-weight: 600;
         white-space: nowrap;
     }
-
-    /* ======================================================
-       HERO
-       ====================================================== */
 
     .hero {
         position: relative;
@@ -1760,13 +1740,7 @@ st.html(
         right: -100px;
         top: -110px;
 
-        border:
-            1px solid rgba(
-                255,
-                255,
-                255,
-                .1
-            );
+        border: 1px solid rgba(255, 255, 255, .1);
     }
 
     .hero-circle-two {
@@ -1775,18 +1749,8 @@ st.html(
         right: 80px;
         bottom: -130px;
 
-        border:
-            1px solid rgba(
-                255,
-                255,
-                255,
-                .08
-            );
+        border: 1px solid rgba(255, 255, 255, .08);
     }
-
-    /* ======================================================
-       SECTIONS
-       ====================================================== */
 
     .section-title {
         font-size: 23px;
@@ -1800,10 +1764,6 @@ st.html(
         margin-bottom: 20px;
         font-size: 14px;
     }
-
-    /* ======================================================
-       PORTAL CARDS
-       ====================================================== */
 
     .portal-card {
         width: 100%;
@@ -1842,12 +1802,7 @@ st.html(
         margin-top: 8px;
 
         overflow-wrap: anywhere;
-        word-break: normal;
     }
-
-    /* ======================================================
-       SECURITY
-       ====================================================== */
 
     .security-card {
         margin-top: 25px;
@@ -1875,16 +1830,11 @@ st.html(
         margin-top: 7px;
     }
 
-    /* ======================================================
-       FOOTER
-       ====================================================== */
-
     .footer {
         margin-top: 50px;
         padding-top: 20px;
 
-        border-top:
-            1px solid #e5e7eb;
+        border-top: 1px solid #e5e7eb;
 
         color: #9ca3af;
         font-size: 12px;
@@ -1893,10 +1843,6 @@ st.html(
         justify-content: space-between;
         gap: 20px;
     }
-
-    /* ======================================================
-       MOBILE
-       ====================================================== */
 
     @media (max-width: 700px) {
 
@@ -1932,231 +1878,175 @@ st.html(
 
 
 # ============================================================
-# LOGIN SCREEN
+# HOME PAGE
 # ============================================================
 
-if not st.session_state.authenticated:
+def home():
 
-    st.html(
-        """
-        <div class="login-wrapper">
+    # --------------------------------------------------------
+    # LOGIN
+    # --------------------------------------------------------
 
-            <div class="login-brand">
+    if not st.session_state.authenticated:
 
-                <div class="login-logo">
-                    G
-                </div>
+        st.html(
+            """
+            <div class="login-wrapper">
 
-                <div class="login-title">
-                    Guardrive
-                </div>
+                <div class="login-brand">
 
-                <div class="login-subtitle">
-                    Private location sharing platform
-                </div>
+                    <div class="login-logo">
+                        G
+                    </div>
 
-            </div>
-
-            <div class="login-card">
-
-                <div class="login-heading">
-                    Welcome back
-                </div>
-
-                <div class="login-description">
-                    Sign in to access the Guardrive platform.
-                </div>
-
-            </div>
-
-        </div>
-        """
-    )
-
-    password = st.text_input(
-        "Password",
-        type="password",
-        placeholder="Enter your password",
-        key="login_password",
-    )
-
-    if st.button(
-        "Sign in to Guardrive",
-        type="primary",
-        use_container_width=True,
-        key="login_button",
-    ):
-
-        if password == APP_PASSWORD:
-
-            st.session_state.authenticated = True
-
-            st.rerun()
-
-        else:
-
-            st.error(
-                "Incorrect password. Please try again."
-            )
-
-    st.html(
-        """
-        <div class="security-note">
-            🔒 Protected access · Guardrive
-        </div>
-        """
-    )
-
-    st.stop()
-
-
-# ============================================================
-# NAVIGATION BAR
-# ============================================================
-
-nav_left, nav_right = st.columns(
-    [6, 1],
-    vertical_alignment="center"
-)
-
-
-with nav_left:
-
-    st.html(
-        """
-        <div class="navbar">
-
-            <div class="brand-container">
-
-                <div class="brand-logo">
-                    G
-                </div>
-
-                <div>
-
-                    <div class="brand-name">
+                    <div class="login-title">
                         Guardrive
                     </div>
 
-                    <div class="brand-caption">
-                        PRIVATE LOCATION SHARING
+                    <div class="login-subtitle">
+                        Private location sharing platform
+                    </div>
+
+                </div>
+
+                <div class="login-card">
+
+                    <div class="login-heading">
+                        Welcome back
+                    </div>
+
+                    <div class="login-description">
+                        Sign in to access the Guardrive platform.
                     </div>
 
                 </div>
 
             </div>
+            """
+        )
 
-            <div class="system-active">
-                ● System Active
+        password = st.text_input(
+            "Password",
+            type="password",
+            placeholder="Enter your password",
+            key="login_password",
+        )
+
+        if st.button(
+            "Sign in to Guardrive",
+            type="primary",
+            use_container_width=True,
+            key="login_button",
+        ):
+
+            if password == APP_PASSWORD:
+
+                st.session_state.authenticated = True
+
+                st.rerun()
+
+            else:
+
+                st.error(
+                    "Incorrect password. Please try again."
+                )
+
+        st.html(
+            """
+            <div class="security-note">
+                🔒 Protected access · Guardrive
             </div>
+            """
+        )
 
-        </div>
-        """
+        return
+
+    # --------------------------------------------------------
+    # NAVBAR
+    # --------------------------------------------------------
+
+    nav_left, nav_right = st.columns(
+        [6, 1],
+        vertical_alignment="center"
     )
 
+    with nav_left:
 
-with nav_right:
+        st.html(
+            """
+            <div class="navbar">
 
-    if st.button(
-        "Sign out",
-        use_container_width=True,
-        key="home_signout",
-    ):
+                <div class="brand-container">
 
-        st.session_state.clear()
+                    <div class="brand-logo">
+                        G
+                    </div>
 
-        st.rerun()
+                    <div>
 
+                        <div class="brand-name">
+                            Guardrive
+                        </div>
 
-# ============================================================
-# HERO
-# ============================================================
+                        <div class="brand-caption">
+                            PRIVATE LOCATION SHARING
+                        </div>
 
-st.html(
-    """
-    <div class="hero">
+                    </div>
 
-        <div class="hero-circle-one"></div>
+                </div>
 
-        <div class="hero-circle-two"></div>
-
-        <div class="hero-content">
-
-            <div class="hero-badge">
-                🛡 LOCATION PROTECTION
-            </div>
-
-            <div class="hero-title">
-                Stay connected.<br>
-                Stay in control.
-            </div>
-
-            <div class="hero-description">
-
-                Guardrive gives drivers complete control over
-                location sharing. Approve access requests,
-                control sharing duration and decide who can
-                access your location.
+                <div class="system-active">
+                    ● System Active
+                </div>
 
             </div>
+            """
+        )
 
-        </div>
+    with nav_right:
 
-    </div>
-    """
-)
+        if st.button(
+            "Sign out",
+            use_container_width=True,
+            key="home_signout",
+        ):
 
+            st.session_state.clear()
 
-# ============================================================
-# PORTAL SECTION
-# ============================================================
+            st.rerun()
 
-st.html(
-    """
-    <div class="section-title">
-        Choose your experience
-    </div>
-
-    <div class="section-description">
-        Select a portal to continue.
-    </div>
-    """
-)
-
-
-# ============================================================
-# PORTALS
-# ============================================================
-
-driver_col, family_col = st.columns(
-    2,
-    gap="large"
-)
-
-
-# ============================================================
-# DRIVER PORTAL
-# ============================================================
-
-with driver_col:
+    # --------------------------------------------------------
+    # HERO
+    # --------------------------------------------------------
 
     st.html(
         """
-        <div class="portal-card">
+        <div class="hero">
 
-            <div class="portal-icon">
-                🚗
-            </div>
+            <div class="hero-circle-one"></div>
 
-            <div class="portal-title">
-                Driver Portal
-            </div>
+            <div class="hero-circle-two"></div>
 
-            <div class="portal-description">
+            <div class="hero-content">
 
-                Manage location protection, start GPS tracking,
-                review access requests and control who can
-                access your location.
+                <div class="hero-badge">
+                    🛡 LOCATION PROTECTION
+                </div>
+
+                <div class="hero-title">
+                    Stay connected.<br>
+                    Stay in control.
+                </div>
+
+                <div class="hero-description">
+
+                    Guardrive gives drivers complete control over
+                    location sharing. Approve access requests,
+                    control sharing duration and decide who can
+                    access your location.
+
+                </div>
 
             </div>
 
@@ -2164,38 +2054,125 @@ with driver_col:
         """
     )
 
-    if st.button(
-        "Open Driver Portal",
-        use_container_width=True,
-        type="primary",
-        key="open_driver",
-    ):
-        st.switch_page(driver_page)
-
-
-# ============================================================
-# FAMILY ACCESS
-# ============================================================
-
-with family_col:
+    # --------------------------------------------------------
+    # SECTION
+    # --------------------------------------------------------
 
     st.html(
         """
-        <div class="portal-card">
+        <div class="section-title">
+            Choose your experience
+        </div>
 
-            <div class="portal-icon">
-                👥
+        <div class="section-description">
+            Select a portal to continue.
+        </div>
+        """
+    )
+
+    # --------------------------------------------------------
+    # PORTALS
+    # --------------------------------------------------------
+
+    driver_col, family_col = st.columns(
+        2,
+        gap="large"
+    )
+
+    # --------------------------------------------------------
+    # DRIVER
+    # --------------------------------------------------------
+
+    with driver_col:
+
+        st.html(
+            """
+            <div class="portal-card">
+
+                <div class="portal-icon">
+                    🚗
+                </div>
+
+                <div class="portal-title">
+                    Driver Portal
+                </div>
+
+                <div class="portal-description">
+
+                    Manage location protection, start GPS tracking,
+                    review access requests and control who can
+                    access your location.
+
+                </div>
+
+            </div>
+            """
+        )
+
+        if st.button(
+            "Open Driver Portal",
+            use_container_width=True,
+            type="primary",
+            key="open_driver",
+        ):
+
+            st.switch_page(driver_page)
+
+    # --------------------------------------------------------
+    # FAMILY
+    # --------------------------------------------------------
+
+    with family_col:
+
+        st.html(
+            """
+            <div class="portal-card">
+
+                <div class="portal-icon">
+                    👥
+                </div>
+
+                <div class="portal-title">
+                    Family Access
+                </div>
+
+                <div class="portal-description">
+
+                    Request authorized access to a driver's
+                    location and view the latest available
+                    position.
+
+                </div>
+
+            </div>
+            """
+        )
+
+        if st.button(
+            "Open Family Access",
+            use_container_width=True,
+            key="open_family",
+        ):
+
+            st.switch_page(family_page)
+
+    # --------------------------------------------------------
+    # PRIVACY
+    # --------------------------------------------------------
+
+    st.html(
+        """
+        <div class="security-card">
+
+            <div class="security-title">
+                🔐 Privacy by design
             </div>
 
-            <div class="portal-title">
-                Family Access
-            </div>
+            <div class="security-description">
 
-            <div class="portal-description">
-
-                Request authorized access to a driver's
-                location and view the latest available
-                position.
+                A phone number alone never exposes a driver's
+                location. Every access request requires explicit
+                driver approval and can be revoked.
 
             </div>
 
@@ -2203,55 +2180,51 @@ with family_col:
         """
     )
 
-    if st.button(
-        "Open Family Access",
-        use_container_width=True,
-        key="open_family",
-    ):
-        st.switch_page(family_page)
+    # --------------------------------------------------------
+    # FOOTER
+    # --------------------------------------------------------
+
+    st.html(
+        """
+        <div class="footer">
+
+            <div>
+                Guardrive © 2026
+            </div>
+
+            <div>
+                Private location sharing · Prototype
+            </div>
+
+        </div>
+        """
+    )
 
 
 # ============================================================
-# PRIVACY
+# STREAMLIT NAVIGATION
 # ============================================================
 
-st.html(
-    """
-    <div class="security-card">
+home_page = st.Page(
+    home,
+    title="Guardrive",
+    icon="🛡️",
+    default=True,
+)
 
-        <div class="security-title">
-            🔐 Privacy by design
-        </div>
 
-        <div class="security-description">
-
-            A phone number alone never exposes a driver's
-            location. Every access request requires explicit
-            driver approval and can be revoked.
-
-        </div>
-
-    </div>
-    """
+pg = st.navigation(
+    [
+        home_page,
+        driver_page,
+        family_page,
+    ],
+    position="hidden",
 )
 
 
 # ============================================================
-# FOOTER
+# RUN CURRENT PAGE
 # ============================================================
 
-st.html(
-    """
-    <div class="footer">
-
-        <div>
-            Guardrive © 2026
-        </div>
-
-        <div>
-            Private location sharing · Prototype
-        </div>
-
-    </div>
-    """
-)
+pg.run()
