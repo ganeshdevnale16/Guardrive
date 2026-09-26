@@ -3973,32 +3973,56 @@ def logout_driver():
     st.rerun()
 
 
+# def get_all_drivers():
+
+#     conn = database.get_connection()
+
+#     try:
+
+#         cursor = conn.cursor()
+
+#         cursor.execute("""
+#             SELECT
+#                 id,
+#                 name,
+#                 phone,
+#                 active,
+#                 created_at
+#             FROM drivers
+#             WHERE active = 1
+#             ORDER BY id DESC
+#         """)
+
+#         return cursor.fetchall()
+
+#     finally:
+
+#         conn.close()
 def get_all_drivers():
-
-    conn = database.get_connection()
-
     try:
+        conn = database.get_connection()
 
-        cursor = conn.cursor()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    id,
+                    name,
+                    phone,
+                    active,
+                    created_at
+                FROM drivers
+                ORDER BY id DESC
+            """)
 
-        cursor.execute("""
-            SELECT
-                id,
-                name,
-                phone,
-                active,
-                created_at
-            FROM drivers
-            WHERE active = 1
-            ORDER BY id DESC
-        """)
-
-        return cursor.fetchall()
-
-    finally:
+            rows = cursor.fetchall()
 
         conn.close()
 
+        return rows
+
+    except Exception as e:
+        st.error(f"Database error while loading drivers: {e}")
+        return []
 
 def login_driver(driver):
 
