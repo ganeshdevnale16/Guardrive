@@ -1,315 +1,782 @@
-import sqlite3
+# import sqlite3
+# from datetime import datetime, timezone
+# from pathlib import Path
+
+# DB_FILE = Path(__file__).resolve().parent / "guardrive.db"
+
+
+# def utc_now_iso() -> str:
+#     return datetime.now(timezone.utc).isoformat()
+
+
+# def get_connection():
+#     conn = sqlite3.connect(
+#         str(DB_FILE),
+#         timeout=30,
+#         check_same_thread=False,
+#     )
+#     conn.row_factory = sqlite3.Row
+#     conn.execute("PRAGMA foreign_keys = ON")
+#     conn.execute("PRAGMA journal_mode = WAL")
+#     return conn
+
+
+# def init_db():
+#     with get_connection() as conn:
+#         conn.executescript(
+#             """
+#             CREATE TABLE IF NOT EXISTS drivers (
+#                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                 name TEXT NOT NULL,
+#                 phone TEXT NOT NULL UNIQUE,
+#                 active INTEGER NOT NULL DEFAULT 1,
+#                 created_at TEXT NOT NULL
+#             );
+
+#             CREATE TABLE IF NOT EXISTS locations (
+#                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                 driver_id INTEGER NOT NULL,
+#                 latitude REAL NOT NULL,
+#                 longitude REAL NOT NULL,
+#                 speed REAL NOT NULL DEFAULT 0,
+#                 battery REAL,
+#                 recorded_at TEXT NOT NULL,
+#                 FOREIGN KEY (driver_id) REFERENCES drivers(id) ON DELETE CASCADE
+#             );
+
+#             CREATE INDEX IF NOT EXISTS idx_locations_driver_id
+#                 ON locations(driver_id);
+
+#             CREATE INDEX IF NOT EXISTS idx_locations_driver_time
+#                 ON locations(driver_id, id DESC);
+
+#             CREATE TABLE IF NOT EXISTS access_requests (
+#                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+#                 driver_id INTEGER NOT NULL,
+#                 requester_name TEXT NOT NULL,
+#                 requester_phone TEXT NOT NULL,
+#                 duration TEXT NOT NULL,
+#                 status TEXT NOT NULL DEFAULT 'PENDING',
+#                 created_at TEXT NOT NULL,
+#                 expires_at TEXT,
+#                 FOREIGN KEY (driver_id) REFERENCES drivers(id) ON DELETE CASCADE
+#             );
+
+#             CREATE INDEX IF NOT EXISTS idx_access_driver
+#                 ON access_requests(driver_id);
+
+#             CREATE INDEX IF NOT EXISTS idx_access_lookup
+#                 ON access_requests(driver_id, requester_phone, status);
+#             """
+#         )
+
+
+# def create_driver(name: str, phone: str):
+#     name = name.strip()
+#     phone = phone.strip()
+
+#     with get_connection() as conn:
+#         try:
+#             cur = conn.execute(
+#                 """
+#                 INSERT INTO drivers (name, phone, active, created_at)
+#                 VALUES (?, ?, 1, ?)
+#                 """,
+#                 (name, phone, utc_now_iso()),
+#             )
+#             return cur.lastrowid
+#         except sqlite3.IntegrityError:
+#             return None
+
+
+# def get_driver_by_phone(phone: str):
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM drivers
+#             WHERE phone = ?
+#               AND active = 1
+#             LIMIT 1
+#             """,
+#             (phone.strip(),),
+#         ).fetchone()
+
+
+# def get_driver_by_id(driver_id: int):
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM drivers
+#             WHERE id = ?
+#             LIMIT 1
+#             """,
+#             (int(driver_id),),
+#         ).fetchone()
+
+
+# def save_location(
+#     driver_id: int,
+#     latitude: float,
+#     longitude: float,
+#     speed: float = 0,
+#     battery=None,
+# ):
+#     with get_connection() as conn:
+#         conn.execute(
+#             """
+#             INSERT INTO locations
+#                 (driver_id, latitude, longitude, speed, battery, recorded_at)
+#             VALUES (?, ?, ?, ?, ?, ?)
+#             """,
+#             (
+#                 int(driver_id),
+#                 float(latitude),
+#                 float(longitude),
+#                 float(speed or 0),
+#                 battery,
+#                 utc_now_iso(),
+#             ),
+#         )
+
+
+# def get_latest_location(driver_id: int):
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM locations
+#             WHERE driver_id = ?
+#             ORDER BY id DESC
+#             LIMIT 1
+#             """,
+#             (int(driver_id),),
+#         ).fetchone()
+
+
+# def get_location_history(driver_id: int, limit: int = 100):
+#     limit = max(1, min(int(limit), 1000))
+
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM locations
+#             WHERE driver_id = ?
+#             ORDER BY id DESC
+#             LIMIT ?
+#             """,
+#             (int(driver_id), limit),
+#         ).fetchall()
+
+
+# def create_access_request(
+#     driver_id: int,
+#     requester_name: str,
+#     requester_phone: str,
+#     duration: str,
+# ):
+#     with get_connection() as conn:
+#         cur = conn.execute(
+#             """
+#             INSERT INTO access_requests
+#                 (
+#                     driver_id,
+#                     requester_name,
+#                     requester_phone,
+#                     duration,
+#                     status,
+#                     created_at
+#                 )
+#             VALUES (?, ?, ?, ?, 'PENDING', ?)
+#             """,
+#             (
+#                 int(driver_id),
+#                 requester_name.strip(),
+#                 requester_phone.strip(),
+#                 duration,
+#                 utc_now_iso(),
+#             ),
+#         )
+#         return cur.lastrowid
+
+
+# def get_driver_requests(driver_id: int):
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM access_requests
+#             WHERE driver_id = ?
+#             ORDER BY id DESC
+#             """,
+#             (int(driver_id),),
+#         ).fetchall()
+
+
+# def get_access_request(request_id: int):
+#     with get_connection() as conn:
+#         return conn.execute(
+#             """
+#             SELECT *
+#             FROM access_requests
+#             WHERE id = ?
+#             LIMIT 1
+#             """,
+#             (int(request_id),),
+#         ).fetchone()
+
+
+# def update_access_request(request_id: int, status: str, expires_at=None):
+#     with get_connection() as conn:
+#         conn.execute(
+#             """
+#             UPDATE access_requests
+#             SET status = ?, expires_at = ?
+#             WHERE id = ?
+#             """,
+#             (status, expires_at, int(request_id)),
+#         )
+
+
+# def check_location_access(driver_id: int, requester_phone: str):
+#     expire_old_access()
+
+#     with get_connection() as conn:
+#         access = conn.execute(
+#             """
+#             SELECT *
+#             FROM access_requests
+#             WHERE driver_id = ?
+#               AND requester_phone = ?
+#               AND status = 'ACTIVE'
+#             ORDER BY id DESC
+#             LIMIT 1
+#             """,
+#             (int(driver_id), requester_phone.strip()),
+#         ).fetchone()
+
+#     if not access:
+#         return False, None
+
+#     if access["duration"] == "UNTIL_REVOKED":
+#         return True, access
+
+#     expires_at = access["expires_at"]
+#     if not expires_at:
+#         return False, None
+
+#     try:
+#         expiry = datetime.fromisoformat(expires_at)
+#         if expiry.tzinfo is None:
+#             expiry = expiry.replace(tzinfo=timezone.utc)
+
+#         if datetime.now(timezone.utc) < expiry:
+#             return True, access
+#     except (TypeError, ValueError):
+#         pass
+
+#     return False, None
+
+
+# def expire_old_access():
+#     now = utc_now_iso()
+
+#     with get_connection() as conn:
+#         conn.execute(
+#             """
+#             UPDATE access_requests
+#             SET status = 'EXPIRED'
+#             WHERE status = 'ACTIVE'
+#               AND expires_at IS NOT NULL
+#               AND expires_at <= ?
+#             """,
+#             (now,),
+#         )
+
+
+# def revoke_access(request_id: int):
+#     update_access_request(
+#         request_id=request_id,
+#         status="REVOKED",
+#         expires_at=None,
+#     )
+
+
+# def deny_access(request_id: int):
+#     update_access_request(
+#         request_id=request_id,
+#         status="DENIED",
+#         expires_at=None,
+#     )
+
+
+# init_db()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import os
 from datetime import datetime, timezone
-from pathlib import Path
 
-DB_FILE = Path(__file__).resolve().parent / "guardrive.db"
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 
-def utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+# ============================================================
+# DATABASE CONFIG
+# ============================================================
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL environment variable is not set")
+
+
+# ============================================================
+# CONNECTION
+# ============================================================
 
 def get_connection():
-    conn = sqlite3.connect(
-        str(DB_FILE),
-        timeout=30,
-        check_same_thread=False,
+    return psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=RealDictCursor
     )
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    conn.execute("PRAGMA journal_mode = WAL")
-    return conn
 
+
+# ============================================================
+# INITIALIZE DATABASE
+# ============================================================
 
 def init_db():
     with get_connection() as conn:
-        conn.executescript(
-            """
-            CREATE TABLE IF NOT EXISTS drivers (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                phone TEXT NOT NULL UNIQUE,
-                active INTEGER NOT NULL DEFAULT 1,
-                created_at TEXT NOT NULL
-            );
+        with conn.cursor() as cur:
 
-            CREATE TABLE IF NOT EXISTS locations (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                driver_id INTEGER NOT NULL,
-                latitude REAL NOT NULL,
-                longitude REAL NOT NULL,
-                speed REAL NOT NULL DEFAULT 0,
-                battery REAL,
-                recorded_at TEXT NOT NULL,
-                FOREIGN KEY (driver_id) REFERENCES drivers(id) ON DELETE CASCADE
-            );
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS drivers (
+                    id BIGSERIAL PRIMARY KEY,
+                    name TEXT NOT NULL,
+                    phone TEXT NOT NULL UNIQUE,
+                    active BOOLEAN NOT NULL DEFAULT TRUE,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                );
+            """)
 
-            CREATE INDEX IF NOT EXISTS idx_locations_driver_id
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS locations (
+                    id BIGSERIAL PRIMARY KEY,
+                    driver_id BIGINT NOT NULL
+                        REFERENCES drivers(id)
+                        ON DELETE CASCADE,
+                    latitude DOUBLE PRECISION NOT NULL,
+                    longitude DOUBLE PRECISION NOT NULL,
+                    speed DOUBLE PRECISION NOT NULL DEFAULT 0,
+                    battery DOUBLE PRECISION,
+                    recorded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                );
+            """)
+
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_locations_driver_id
                 ON locations(driver_id);
+            """)
 
-            CREATE INDEX IF NOT EXISTS idx_locations_driver_time
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_locations_driver_time
                 ON locations(driver_id, id DESC);
+            """)
 
-            CREATE TABLE IF NOT EXISTS access_requests (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                driver_id INTEGER NOT NULL,
-                requester_name TEXT NOT NULL,
-                requester_phone TEXT NOT NULL,
-                duration TEXT NOT NULL,
-                status TEXT NOT NULL DEFAULT 'PENDING',
-                created_at TEXT NOT NULL,
-                expires_at TEXT,
-                FOREIGN KEY (driver_id) REFERENCES drivers(id) ON DELETE CASCADE
-            );
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS access_requests (
+                    id BIGSERIAL PRIMARY KEY,
+                    driver_id BIGINT NOT NULL
+                        REFERENCES drivers(id)
+                        ON DELETE CASCADE,
+                    requester_name TEXT NOT NULL,
+                    requester_phone TEXT NOT NULL,
+                    duration TEXT NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'PENDING',
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    expires_at TIMESTAMPTZ
+                );
+            """)
 
-            CREATE INDEX IF NOT EXISTS idx_access_driver
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_access_driver
                 ON access_requests(driver_id);
+            """)
 
-            CREATE INDEX IF NOT EXISTS idx_access_lookup
-                ON access_requests(driver_id, requester_phone, status);
-            """
-        )
+            cur.execute("""
+                CREATE INDEX IF NOT EXISTS idx_access_lookup
+                ON access_requests(
+                    driver_id,
+                    requester_phone,
+                    status
+                );
+            """)
 
+        conn.commit()
+
+
+# ============================================================
+# DRIVERS
+# ============================================================
 
 def create_driver(name: str, phone: str):
-    name = name.strip()
-    phone = phone.strip()
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
 
-    with get_connection() as conn:
-        try:
-            cur = conn.execute(
-                """
-                INSERT INTO drivers (name, phone, active, created_at)
-                VALUES (?, ?, 1, ?)
-                """,
-                (name, phone, utc_now_iso()),
-            )
-            return cur.lastrowid
-        except sqlite3.IntegrityError:
-            return None
+                cur.execute("""
+                    INSERT INTO drivers
+                        (name, phone)
+                    VALUES
+                        (%s, %s)
+                    RETURNING id
+                """, (
+                    name,
+                    phone
+                ))
+
+                row = cur.fetchone()
+
+            conn.commit()
+
+            return row["id"] if row else None
+
+    except psycopg2.IntegrityError:
+        return None
 
 
 def get_driver_by_phone(phone: str):
     with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM drivers
-            WHERE phone = ?
-              AND active = 1
-            LIMIT 1
-            """,
-            (phone.strip(),),
-        ).fetchone()
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT *
+                FROM drivers
+                WHERE phone = %s
+                  AND active = TRUE
+                LIMIT 1
+            """, (phone,))
+
+            return cur.fetchone()
 
 
 def get_driver_by_id(driver_id: int):
-    with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM drivers
-            WHERE id = ?
-            LIMIT 1
-            """,
-            (int(driver_id),),
-        ).fetchone()
+    if driver_id is None:
+        return None
 
+    try:
+        driver_id = int(driver_id)
+    except (TypeError, ValueError):
+        return None
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT *
+                FROM drivers
+                WHERE id = %s
+                LIMIT 1
+            """, (driver_id,))
+
+            return cur.fetchone()
+
+
+# ============================================================
+# GPS LOCATIONS
+# ============================================================
 
 def save_location(
     driver_id: int,
     latitude: float,
     longitude: float,
     speed: float = 0,
-    battery=None,
+    battery=None
 ):
     with get_connection() as conn:
-        conn.execute(
-            """
-            INSERT INTO locations
-                (driver_id, latitude, longitude, speed, battery, recorded_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            (
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                INSERT INTO locations
+                    (
+                        driver_id,
+                        latitude,
+                        longitude,
+                        speed,
+                        battery,
+                        recorded_at
+                    )
+                VALUES
+                    (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        NOW()
+                    )
+                RETURNING id
+            """, (
                 int(driver_id),
                 float(latitude),
                 float(longitude),
                 float(speed or 0),
-                battery,
-                utc_now_iso(),
-            ),
-        )
+                battery
+            ))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    location_id = row["id"] if row else None
+
+    print(
+        f"GPS SAVED TO SUPABASE: "
+        f"driver={driver_id}, "
+        f"id={location_id}, "
+        f"lat={latitude}, "
+        f"lon={longitude}"
+    )
+
+    return location_id
 
 
 def get_latest_location(driver_id: int):
     with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM locations
-            WHERE driver_id = ?
-            ORDER BY id DESC
-            LIMIT 1
-            """,
-            (int(driver_id),),
-        ).fetchone()
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT *
+                FROM locations
+                WHERE driver_id = %s
+                ORDER BY id DESC
+                LIMIT 1
+            """, (int(driver_id),))
+
+            return cur.fetchone()
 
 
-def get_location_history(driver_id: int, limit: int = 100):
-    limit = max(1, min(int(limit), 1000))
-
+def get_location_history(
+    driver_id: int,
+    limit: int = 100
+):
     with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM locations
-            WHERE driver_id = ?
-            ORDER BY id DESC
-            LIMIT ?
-            """,
-            (int(driver_id), limit),
-        ).fetchall()
+        with conn.cursor() as cur:
 
+            cur.execute("""
+                SELECT *
+                FROM locations
+                WHERE driver_id = %s
+                ORDER BY id DESC
+                LIMIT %s
+            """, (
+                int(driver_id),
+                int(limit)
+            ))
+
+            return cur.fetchall()
+
+
+# ============================================================
+# ACCESS REQUESTS
+# ============================================================
 
 def create_access_request(
     driver_id: int,
     requester_name: str,
     requester_phone: str,
-    duration: str,
+    duration: str
 ):
     with get_connection() as conn:
-        cur = conn.execute(
-            """
-            INSERT INTO access_requests
-                (
-                    driver_id,
-                    requester_name,
-                    requester_phone,
-                    duration,
-                    status,
-                    created_at
-                )
-            VALUES (?, ?, ?, ?, 'PENDING', ?)
-            """,
-            (
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                INSERT INTO access_requests
+                    (
+                        driver_id,
+                        requester_name,
+                        requester_phone,
+                        duration,
+                        status
+                    )
+                VALUES
+                    (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        'PENDING'
+                    )
+                RETURNING id
+            """, (
                 int(driver_id),
-                requester_name.strip(),
-                requester_phone.strip(),
-                duration,
-                utc_now_iso(),
-            ),
-        )
-        return cur.lastrowid
+                requester_name,
+                requester_phone,
+                duration
+            ))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row["id"] if row else None
 
 
 def get_driver_requests(driver_id: int):
     with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM access_requests
-            WHERE driver_id = ?
-            ORDER BY id DESC
-            """,
-            (int(driver_id),),
-        ).fetchall()
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT *
+                FROM access_requests
+                WHERE driver_id = %s
+                ORDER BY id DESC
+            """, (int(driver_id),))
+
+            return cur.fetchall()
 
 
 def get_access_request(request_id: int):
     with get_connection() as conn:
-        return conn.execute(
-            """
-            SELECT *
-            FROM access_requests
-            WHERE id = ?
-            LIMIT 1
-            """,
-            (int(request_id),),
-        ).fetchone()
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT *
+                FROM access_requests
+                WHERE id = %s
+                LIMIT 1
+            """, (int(request_id),))
+
+            return cur.fetchone()
 
 
-def update_access_request(request_id: int, status: str, expires_at=None):
+# ============================================================
+# ACCESS UPDATE
+# ============================================================
+
+def update_access_request(
+    request_id: int,
+    status: str,
+    expires_at=None
+):
     with get_connection() as conn:
-        conn.execute(
-            """
-            UPDATE access_requests
-            SET status = ?, expires_at = ?
-            WHERE id = ?
-            """,
-            (status, expires_at, int(request_id)),
-        )
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                UPDATE access_requests
+                SET
+                    status = %s,
+                    expires_at = %s
+                WHERE id = %s
+            """, (
+                status,
+                expires_at,
+                int(request_id)
+            ))
+
+        conn.commit()
 
 
-def check_location_access(driver_id: int, requester_phone: str):
+# ============================================================
+# EXPIRE OLD ACCESS
+# ============================================================
+
+def expire_old_access():
+    now = datetime.now(timezone.utc)
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                UPDATE access_requests
+                SET status = 'EXPIRED'
+                WHERE status = 'ACTIVE'
+                  AND expires_at IS NOT NULL
+                  AND expires_at <= %s
+            """, (now,))
+
+        conn.commit()
+
+
+# ============================================================
+# CHECK LOCATION ACCESS
+# ============================================================
+
+def check_location_access(
+    driver_id: int,
+    requester_phone: str
+):
     expire_old_access()
 
     with get_connection() as conn:
-        access = conn.execute(
-            """
-            SELECT *
-            FROM access_requests
-            WHERE driver_id = ?
-              AND requester_phone = ?
-              AND status = 'ACTIVE'
-            ORDER BY id DESC
-            LIMIT 1
-            """,
-            (int(driver_id), requester_phone.strip()),
-        ).fetchone()
+        with conn.cursor() as cur:
 
-    if not access:
-        return False, None
+            cur.execute("""
+                SELECT *
+                FROM access_requests
+                WHERE driver_id = %s
+                  AND requester_phone = %s
+                  AND status = 'ACTIVE'
+                ORDER BY id DESC
+                LIMIT 1
+            """, (
+                int(driver_id),
+                requester_phone
+            ))
 
-    if access["duration"] == "UNTIL_REVOKED":
-        return True, access
+            access = cur.fetchone()
 
-    expires_at = access["expires_at"]
-    if not expires_at:
-        return False, None
+            if access:
+                return True, access
 
-    try:
-        expiry = datetime.fromisoformat(expires_at)
-        if expiry.tzinfo is None:
-            expiry = expiry.replace(tzinfo=timezone.utc)
-
-        if datetime.now(timezone.utc) < expiry:
-            return True, access
-    except (TypeError, ValueError):
-        pass
-
-    return False, None
+            return False, None
 
 
-def expire_old_access():
-    now = utc_now_iso()
-
-    with get_connection() as conn:
-        conn.execute(
-            """
-            UPDATE access_requests
-            SET status = 'EXPIRED'
-            WHERE status = 'ACTIVE'
-              AND expires_at IS NOT NULL
-              AND expires_at <= ?
-            """,
-            (now,),
-        )
-
+# ============================================================
+# REVOKE ACCESS
+# ============================================================
 
 def revoke_access(request_id: int):
     update_access_request(
-        request_id=request_id,
-        status="REVOKED",
-        expires_at=None,
+        request_id,
+        "REVOKED",
+        None
     )
 
+
+# ============================================================
+# DENY ACCESS
+# ============================================================
 
 def deny_access(request_id: int):
     update_access_request(
-        request_id=request_id,
-        status="DENIED",
-        expires_at=None,
+        request_id,
+        "DENIED",
+        None
     )
 
+
+# ============================================================
+# START DATABASE
+# ============================================================
 
 init_db()
