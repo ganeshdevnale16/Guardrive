@@ -4,3 +4,11 @@ streamlit-geolocation
 fastapi
 uvicorn[standard]
 pandas
+streamlit
+streamlit-autorefresh
+streamlit-geolocation
+fastapi
+uvicorn[standard]
+pandas
+requests
+psycopg2-binary
