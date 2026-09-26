@@ -1344,13 +1344,13 @@ with driver_col:
 
 
     if st.button(
-    "Open Driver Portal",
-    use_container_width=True,
-    type="primary",
-    key="open_driver",
-):
-
-    st.switch_page("Driver")
+                "Open Driver Portal",
+                use_container_width=True,
+                type="primary",
+                key="open_driver",
+            ):
+            
+                st.switch_page("Driver")
 
 
 # ============================================================
