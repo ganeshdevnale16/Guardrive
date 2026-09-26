@@ -1385,12 +1385,12 @@ with family_col:
 
 
     if st.button(
-    "Open Family Access",
-    use_container_width=True,
-    key="open_family",
-):
-
-    st.switch_page("Family_Chat")
+                "Open Family Access",
+                use_container_width=True,
+                key="open_family",
+            ):
+            
+                st.switch_page("Family_Chat")
 
 
 # ============================================================
