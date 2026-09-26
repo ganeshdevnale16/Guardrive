@@ -577,8 +577,11 @@ st.set_page_config(
 # AUTHENTICATION
 # ============================================================
 
+# if not st.session_state.get("authenticated", False):
+#     st.switch_page("app.py")
 if not st.session_state.get("authenticated", False):
-    st.switch_page("app.py")
+    st.error("Please login from the Guardrive home page.")
+    st.stop()
 
 
 # ============================================================
