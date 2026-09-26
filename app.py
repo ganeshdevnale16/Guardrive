@@ -1521,17 +1521,17 @@ home_page = st.Page(
     default=True,
 )
 
-driver_page = st.Page(
-    "Driver.py",
-    title="Driver Portal",
-    icon="🚗",
-)
+# driver_page = st.Page(
+#     "Driver.py",
+#     title="Driver Portal",
+#     icon="🚗",
+# )
 
-family_page = st.Page(
-    "Family_Chat.py",
-    title="Family Access",
-    icon="👥",
-)
+# family_page = st.Page(
+#     "Family_Chat.py",
+#     title="Family Access",
+#     icon="👥",
+# )
 
 pg = st.navigation(
     [
