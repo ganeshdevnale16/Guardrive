@@ -1,0 +1,67 @@
+GUARD RIVE - CORRECTED STREAMLIT PROJECT
+=========================================
+
+Folder structure
+----------------
+app.py
+database.py
+gps_server.py
+requirements.txt
+pages/
+    1_Driver.py
+    2_Family_Chat.py
+    3_Live_Tracking.py
+
+1. Install packages
+-------------------
+python -m pip install -r requirements.txt
+
+2. Start the GPS API
+--------------------
+python -m uvicorn gps_server:app --host 127.0.0.1 --port 8000 --reload
+
+3. Start Streamlit
+------------------
+python -m streamlit run app.py
+
+4. Login password
+-----------------
+5511
+
+5. Local GPS
+------------
+The driver page defaults to:
+http://127.0.0.1:8000
+
+This works for local development when the Streamlit page is opened
+from the same computer and the browser permits location access.
+
+6. Deployment
+-------------
+If Streamlit is deployed separately from FastAPI, set:
+
+GPS_API_URL=https://YOUR-GPS-API-DOMAIN
+
+Do NOT leave 127.0.0.1 in a deployed application. In a deployed
+browser, 127.0.0.1 means the user's own computer, not your server.
+
+The Streamlit site must use HTTPS for browser geolocation.
+
+For production, change FastAPI CORS from ["*"] to the exact
+Streamlit frontend URL.
+
+7. Important filename
+---------------------
+The family page must be named exactly:
+
+pages/2_Family_Chat.py
+
+The driver page must be:
+
+pages/1_Driver.py
+
+The live tracking page must be:
+
+pages/3_Live_Tracking.py
+
+The old "Family chat.py" / "driiver.py" names should not be used.
