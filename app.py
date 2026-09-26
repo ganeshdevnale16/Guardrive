@@ -438,7 +438,7 @@
 #         type="primary",
 #         key="open_driver",
 #     ):
-#         st.switch_page("pages/1_Driver.py")
+#         st.switch_page("Driver.py")
 
 # with family_col:
 #     st.markdown(
@@ -461,7 +461,7 @@
 #         use_container_width=True,
 #         key="open_family",
 #     ):
-#         st.switch_page("pages/2_Family_Chat.py")
+#         st.switch_page("Family_Chat.py")
 
 
 # st.markdown(
