@@ -4211,14 +4211,14 @@ with header_left:
     )
 
 
-with header_home:
+# with header_home:
 
-    if st.button(
-        "← Home",
-        use_container_width=True
-    ):
+#     if st.button(
+#         "← Home",
+#         use_container_width=True
+#     ):
 
-        st.switch_page("app.py")
+#         st.switch_page("app.py")
 
 
 with header_logout:
